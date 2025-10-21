@@ -1,0 +1,60 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+jobs:
+  build-test:
+    name: Basic CI checks
+    runs-on: ubuntu-latest
+
+    steps:
+      # Récupération du code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Configuration d’un langage (ici Node.js par défaut, ajustable ensuite)
+      - name: Set up runtime (Node.js)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Installation des dépendances (si applicable)
+      - name: Install dependencies
+        run: |
+          if [ -f package.json ]; then
+            npm ci
+          else
+            echo "Aucun package.json pour le moment"
+          fi
+
+      # Lint de base (facultatif au début)
+      - name: Lint code
+        run: |
+          if [ -f package.json ]; then
+            npm run lint || echo "Lint non configuré pour l’instant"
+          else
+            echo "Aucun lint à exécuter"
+          fi
+
+      # Tests unitaires basiques
+      - name: Run tests
+        run: |
+          if [ -f package.json ]; then
+            npm test || echo "Aucun test défini pour l’instant"
+          else
+            echo "Pas encore de tests unitaires"
+          fi
+
+      # (Optionnel) Build de test
+      - name: Build project
+        run: |
+          if [ -f package.json ]; then
+            npm run build || echo "Pas encore de build"
+          else
+            echo "Rien à builder pour le moment"
+          fi
+
+      # Cette CI ne bloque pas encore les builds : elle prépare le terrain.
