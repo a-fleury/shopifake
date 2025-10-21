@@ -1,0 +1,99 @@
+services:
+  # Base de données PostgreSQL pour Keycloak
+  postgres:
+    image: postgres:15-alpine
+    container_name: shopifake-postgres
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shopifake-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak avec configuration automatique via import du realm
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.0
+    container_name: shopifake-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_HOSTNAME_STRICT: false
+      KC_HTTP_ENABLED: true
+      KC_HEALTH_ENABLED: true
+    command:
+      - start-dev
+      - --import-realm
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/auth-service/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - shopifake-network
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: 127.0.0.1\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  # Service d'authentification
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: shopifake-auth-service
+    environment:
+      # Configuration du serveur
+      SERVER_PORT: ${AUTH_SERVICE_PORT:-8081}
+      # Configuration Keycloak
+      KEYCLOAK_SERVER_URL: ${KEYCLOAK_SERVER_URL:-http://keycloak:8080}
+      KEYCLOAK_REALM: ${KEYCLOAK_REALM:-shopifake}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID:-shopifake-client}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET:-ZGr8yBKqP3kX9wN2vL5mH7jT4cF6sA1d}
+      KEYCLOAK_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      # URLs pour validation JWT
+      KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://keycloak:8080/realms/shopifake}
+      KEYCLOAK_JWK_SET_URI: ${KEYCLOAK_JWK_SET_URI:-http://keycloak:8080/realms/shopifake/protocol/openid-connect/certs}
+      # CORS
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8080}
+      # Logging
+      LOGGING_LEVEL_SECURITY: ${LOGGING_LEVEL_SECURITY:-INFO}
+      LOGGING_LEVEL_APP: ${LOGGING_LEVEL_APP:-INFO}
+    ports:
+      - "${AUTH_SERVICE_PORT:-8081}:8081"
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    networks:
+      - shopifake-network
+    restart: on-failure
+  # API Gateway (à venir)
+  # api-gateway:
+  #   build:
+  #     context: ./backend/api-gateway
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - shopifake-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  shopifake-network:
+    driver: bridge
