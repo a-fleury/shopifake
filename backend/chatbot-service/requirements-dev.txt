@@ -1,0 +1,6 @@
+# Development dependencies for linting and type checking
+ruff==0.7.4
+mypy==1.13.0
+
+# Type stubs for third-party libraries
+types-requests==2.31.0.20240406

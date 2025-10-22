@@ -1,5 +1,6 @@
-from pathlib import Path
 import json
+from pathlib import Path
+
 import joblib
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -48,15 +49,18 @@ def ask(req: AskRequest):
     if not message:
         # fallback intent
         fallback = next((i["response"] for i in faq if i.get("intent") == "fallback"), None)
-        return {"intent": "fallback", "response": fallback or "Je n’ai pas compris votre question."}
+        return {"intent": "fallback", "response": fallback or "Je n'ai pas compris votre question."}
 
     try:
         intent = model.predict([message])[0]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {e}")
+        raise HTTPException(status_code=500, detail=f"Prediction error: {e}") from e
 
     response = next((i["response"] for i in faq if i.get("intent") == intent), None)
     if not response:
-        response = next((i["response"] for i in faq if i.get("intent") == "fallback"), None) or "Je n’ai pas compris votre question."
+        response = (
+            next((i["response"] for i in faq if i.get("intent") == "fallback"), None)
+            or "Je n'ai pas compris votre question."
+        )
 
     return {"intent": intent, "response": response}
