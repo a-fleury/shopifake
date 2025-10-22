@@ -1,7 +1,5 @@
 import json
 from pathlib import Path
-import os  # Unused import - will fail F401
-import sys  # Another unused import
 
 import joblib
 from fastapi import FastAPI, HTTPException
@@ -42,8 +40,6 @@ model, faq = load_resources()
 
 @app.get("/health")
 def health():
-    unused_variable = "test"  # Unused variable - will fail F841
-    VeryBadVariableName = 123  # Bad naming - will fail N806
     return {"status": "ok"}
 
 
@@ -58,7 +54,7 @@ def ask(req: AskRequest):
     try:
         intent = model.predict([message])[0]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Prediction error: {e}")  # Removed 'from e' - will fail B904
+        raise HTTPException(status_code=500, detail=f"Prediction error: {e}") from e
 
     response = next((i["response"] for i in faq if i.get("intent") == intent), None)
     if not response:
