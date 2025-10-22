@@ -1,0 +1,19 @@
+name: CD Pipeline
+
+on:
+  workflow_dispatch:  # lancement manuel pour le moment
+
+jobs:
+  deploy:
+    name: Minimal CD setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display deployment info
+        run: |
+          echo "Déploiement déclenché manuellement"
+          echo "Ce pipeline servira plus tard à déployer sur staging/prod."
+          echo "Il sera enrichi avec en fonction des choix d’architecture et d’infrastructure."
