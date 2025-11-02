@@ -5,7 +5,6 @@
 set -e  # Exit on first error
 
 cd "$(dirname "$0")"  # Go to script directory
-cd backend/chatbot-service
 
 echo "🔍 Running linters and auto-fixes..."
 echo ""

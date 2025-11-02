@@ -1,7 +1,9 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from mistralai import Mistral
-from pathlib import Path
+
 
 # Charge les variables d'environnement depuis le fichier .env
 load_dotenv()
@@ -41,17 +43,19 @@ def chat_with_customer(user_message: str, model: str = "mistral-medium-latest") 
     """
     system_context = _load_shop_context()
 
-    messages = []
+    messages: list[dict[str, str]] = []
     if system_context:
         messages.append({"role": "system", "content": system_context})
 
     messages.append({"role": "user", "content": user_message})
 
-    resp = client.chat.complete(model=model, messages=messages)
+    resp = client.chat.complete(model=model, messages=messages)  # type: ignore[arg-type]
 
     # Défensive: vérifier que la structure attendue existe
     try:
-        return resp.choices[0].message.content
+        content = resp.choices[0].message.content
+        # Convertir en str si nécessaire
+        return str(content) if content is not None else ""
     except Exception:
         # Si la réponse n'est pas dans le format attendu, retourner la représentation brute
         return str(resp)
