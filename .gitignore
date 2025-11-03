@@ -1,0 +1,28 @@
+# Fichiers d'environnement avec secrets
+.env
+.env.local
+.env.production
+
+# Dépendances
+node_modules/
+target/
+*.jar
+*.war
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+postgres_data/

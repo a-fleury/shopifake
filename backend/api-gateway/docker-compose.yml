@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopifake-api-gateway
+    ports:
+      - "${PORT:-4040}:${PORT:-4040}"
+    environment:
+      - PORT=${PORT:-4040}
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+    restart: unless-stopped
+    networks:
+      - shopifake-network
+
+networks:
+  shopifake-network:
+    driver: bridge

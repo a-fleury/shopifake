@@ -1,10 +1,11 @@
 # 🛍️ Shopifake – Projet DevOps & IA
 
-Application web inspirée de Shopify permettant :
-- La gestion d’un **catalogue produits** (CRUD, variantes, stocks, médias, catégories)
+Application web e-commerce avec microservices permettant :
+- La gestion d'un **catalogue produits** (CRUD, variantes, stocks, médias, catégories)
 - Un **front e-commerce léger** pour la navigation et la consultation
 - Un **moteur de recommandations produits**
-- Un **chatbot d’assistance** pour les FAQ et la recherche produits
+- Un **chatbot d'assistance** pour les FAQ et la recherche produits
+- Un **service d'authentification** avec Keycloak (OAuth2/OpenID Connect)
 - Un **cycle DevOps industrialisé** (CI/CD, IaC, observabilité)
 - Des **tests multi-niveaux** (unitaires → e2e) et tests de charge
 
@@ -23,6 +24,19 @@ cd shopifake
 ```bash
 docker-compose up --build
 ```
+
+### 2bis. Configuration par variables d'environnement
+
+Toutes les URLs et secrets sont externalisés via des variables d'environnement (pas de hard-code en prod).
+
+- Fichier unique: `.env` à la racine du projet
+- Variables clés:
+   - `KEYCLOAK_SERVER_URL` (ex: http://keycloak:8080 en Docker, URL publique en prod)
+   - `KEYCLOAK_REALM`, `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_CLIENT_SECRET`
+   - `KEYCLOAK_ISSUER_URI`, `KEYCLOAK_JWK_SET_URI` (validation JWT)
+   - `CORS_ALLOWED_ORIGINS` (liste d'origines autorisées, séparées par des virgules)
+
+docker-compose lit automatiquement `.env` à la racine. Renseignez les valeurs selon votre environnement (local, staging, prod).
 
 ### 3. Accéder à l’application
 

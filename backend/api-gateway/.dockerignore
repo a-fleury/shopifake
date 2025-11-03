@@ -1,0 +1,11 @@
+target/
+!target/*.jar
+.mvn/wrapper/maven-wrapper.jar
+.git
+.gitignore
+*.md
+.env
+.env.example
+*.log
+.DS_Store
+node_modules/

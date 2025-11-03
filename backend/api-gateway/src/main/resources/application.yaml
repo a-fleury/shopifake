@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: api-gateway
+
+server:
+  port: ${PORT:4040}
