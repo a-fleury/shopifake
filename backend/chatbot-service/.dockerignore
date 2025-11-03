@@ -1,0 +1,60 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Quality
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.cover
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs & databases
+*.log
+*.db
+*.sqlite
+
+# Environment & secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation & development
+README.md
+*.md
+docs/
+
+# Development tools
+requirements-dev.txt
+pre-commit-lint.sh
+pre-commit-lint.bat
+pyproject.toml
+
+# Model files (if large - may want to mount or download separately)
+# model/*.pkl
+
+# Data files (if you don't want them in image)
+# data/*.json
