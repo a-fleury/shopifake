@@ -34,9 +34,9 @@ jobs:
       service-path: backend/auth-service
 
   # Étape 3 : Build 
-  build:
-    uses: ./.github/workflows/build.yml
-    needs: tests
-    with:
-      service-path: backend/auth-service
-      service-name: auth-service
+  # build:
+  #   uses: ./.github/workflows/build.yml
+  #   needs: tests
+  #   with:
+  #     service-path: backend/auth-service
+  #     service-name: auth-service
