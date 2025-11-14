@@ -19,26 +19,23 @@ on:
     paths:
       - 'backend/auth-service/**'
 
-# Permissions required by the reusable `build.yml` workflow (it needs to push packages)
+# Permissions required by the reusable `build.yml` workflow
 permissions:
   contents: read
   packages: write
 
 jobs:
-  # Étape 1 : Lint
   lint:
     uses: ./.github/workflows/lint.yml
     with:
       service-path: backend/auth-service
 
-  # Étape 2 : Tests
   tests:
     uses: ./.github/workflows/tetst.yml
     needs: lint
     with:
       service-path: backend/auth-service
 
-  # Étape 3 : Build 
   build:
     uses: ./.github/workflows/build.yml
     needs: tests
