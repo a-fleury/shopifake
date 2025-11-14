@@ -10,6 +10,7 @@ on:
 
 jobs:
   lint-java:
+    name: Lint Java Code
     runs-on: ubuntu-latest
     defaults:
       run:
